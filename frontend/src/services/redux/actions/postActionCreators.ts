@@ -1,4 +1,5 @@
 import { postType } from "../../../interfaces/PostTypes";
+import { costumeFormHandler } from "../../../utils/costumeFormHandler";
 import {
   ActionType,
   CREATE_POST,
@@ -6,16 +7,15 @@ import {
   FETCH_POSTS,
   FORMSTATE,
   LIKE_POST,
-  POST_ERROR,
   UPDATE_POST,
-  POSt_LOADING,
-} from "../../../interfaces/reduxTypes/actionsTypes";
+  costumeError,
+} from "../types/actionsTypes";
 
-const postsLoading = (): ActionType<POSt_LOADING, null> => {
+const postsLoading = (): ActionType<"POSt_LOADING", null> => {
   return { type: "POSt_LOADING", payload: null };
 };
 
-const postsError = (error: Error): ActionType<POST_ERROR, Error> => {
+const postsError = (error: Error): ActionType<"POST_ERROR", Error> => {
   return { type: "POST_ERROR", payload: error };
 };
 
@@ -41,8 +41,11 @@ const CreatePostSuccessReq = (
   };
 };
 
-const formError = (error: Error): ActionType<FORMSTATE, Error> => {
-  return { type: "FORM_ERROR", payload: error };
+const formError = (
+  error: string
+): ActionType<FORMSTATE, costumeError<string, string>> => {
+  const customError = costumeFormHandler(error);
+  return { type: "FORM_ERROR", payload: customError };
 };
 
 const deleteLoding = (): ActionType<"DELETE_LOADING", null> => {
