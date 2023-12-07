@@ -3,6 +3,11 @@ interface ButtonProps {
   bgColor: string;
 }
 
+interface customErrorProps {
+  title: string;
+  message: string;
+}
+
 interface InputProps {
   label: string;
   name: string;
@@ -10,12 +15,14 @@ interface InputProps {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
   value: string;
+  Error: customErrorProps;
 }
 
 interface InputFileProps {
   placeholder: string;
   name: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  Error: customErrorProps;
 }
 
 interface FormProps extends setFormState {
@@ -35,8 +42,8 @@ interface formState {
   message: string;
   tags: string;
 }
-type selectedPostId = string | null;
 
+type selectedPostId = string | null;
 type SetselectedPostId = React.Dispatch<React.SetStateAction<selectedPostId>>;
 
 export type {

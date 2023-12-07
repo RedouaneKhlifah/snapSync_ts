@@ -8,7 +8,7 @@ import {
   CreatePost,
   UpdatePost,
 } from "../../services/redux/actions/PostActions";
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/ReduxHooks";
 import Loader from "../ui/loader/Loader";
 
@@ -19,6 +19,9 @@ function Form({
   SetselectedPostId,
 }: FormProps) {
   const loading = useAppSelector((state) => state.PostsReducer.FORM_LOADING);
+  const newPost = useAppSelector((state) => state.PostsReducer.NEW_POST);
+  const UpdatedPost = useAppSelector((state) => state.PostsReducer.UPDATE_POST);
+  const FormError = useAppSelector((state) => state.PostsReducer.FORM_ERROR);
 
   const dispatch = useAppDispatch();
 
@@ -45,15 +48,7 @@ function Form({
     }
   }
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!selectedPostId) {
-      dispatch(CreatePost(formState));
-    } else {
-      dispatch(UpdatePost(selectedPostId, formState));
-      SetselectedPostId(null);
-    }
-
+  function ClearForm() {
     setFormState({
       title: "",
       image: "",
@@ -62,6 +57,37 @@ function Form({
       tags: "",
     });
     emptyFileInpute("imageInput");
+  }
+
+  useEffect(() => {
+    if (newPost) {
+      ClearForm();
+    } else if (UpdatedPost) {
+      ClearForm();
+    }
+    SetselectedPostId(null);
+  }, [newPost, setFormState, UpdatedPost, SetselectedPostId]);
+
+  useEffect(() => {
+    if (newPost) {
+      setFormState({
+        title: "",
+        image: "",
+        creator: "",
+        message: "",
+        tags: "",
+      });
+      emptyFileInpute("imageInput");
+    }
+  }, [newPost, setFormState]);
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!selectedPostId) {
+      dispatch(CreatePost(formState));
+    } else {
+      dispatch(UpdatePost(selectedPostId, formState));
+    }
   }
   return (
     <div className="bg-white w-10/12  ">
@@ -81,29 +107,34 @@ function Form({
                 name="creator"
                 onChange={handleChange}
                 value={formState.creator}
+                Error={FormError}
               />
               <InputDf
                 label="title"
                 name="title"
                 onChange={handleChange}
                 value={formState.title}
+                Error={FormError}
               />
               <TextareaDf
                 label="message"
                 name="message"
                 onChange={handleChange}
                 value={formState.message}
+                Error={FormError}
               />
               <InputDf
                 label="tags"
                 name="tags"
                 onChange={handleChange}
                 value={formState.tags}
+                Error={FormError}
               />
               <InputFile
                 placeholder="choose a file"
                 name="image"
                 onChange={handleChange}
+                Error={FormError}
               />
               <Button
                 name="SUBMIT"

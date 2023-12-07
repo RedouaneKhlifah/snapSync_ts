@@ -1,5 +1,5 @@
-import store from "../../services/redux/store";
-import reducers from "../../services/redux/reducers";
+import store from "../store";
+import reducers from "../reducers";
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof reducers>;

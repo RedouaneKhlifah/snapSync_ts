@@ -1,5 +1,5 @@
 import { postType } from "../../../interfaces/PostTypes"; // Replace with the actual type for your posts
-import { ActionType } from "../../../interfaces/reduxTypes/actionsTypes";
+import { ActionType, costumeError } from "../types/actionsTypes";
 
 const localLikeUpdate = (
   state: State,
@@ -45,9 +45,11 @@ interface State {
   posts: postType[];
   POSt_LOADING: boolean | null;
   FORM_LOADING: boolean | null;
-  POST_ERROR: Error | null;
-  FORM_ERROR: Error | null;
+  POST_ERROR: string | null;
+  FORM_ERROR: string | costumeError<string, string> | null;
   DELETE_LOADING: boolean | null;
+  NEW_POST: postType | null;
+  UPDATE_POST: postType | null;
 }
 
 const initialState: State = {
@@ -57,6 +59,8 @@ const initialState: State = {
   POST_ERROR: null,
   FORM_ERROR: null,
   DELETE_LOADING: null,
+  NEW_POST: null,
+  UPDATE_POST: null,
 };
 
 const PostsReducer = (state: State = initialState, action: ActionType) => {
@@ -73,6 +77,7 @@ const PostsReducer = (state: State = initialState, action: ActionType) => {
         ...state,
         posts: [...state.posts, action.payload],
         FORM_LOADING: false,
+        NEW_POST: action.payload,
         POST_ERROR: null,
       };
     case "UPDATE_POST":
@@ -81,6 +86,7 @@ const PostsReducer = (state: State = initialState, action: ActionType) => {
         posts: localUpdate(state, state.posts, action.payload),
         FORM_LOADING: false,
         POST_ERROR: null,
+        UPDATE_POST: action.payload,
         DELETE_LOADING: null,
       };
     case "LIKE_POST":

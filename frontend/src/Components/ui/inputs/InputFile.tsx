@@ -8,9 +8,12 @@ interface InputFile {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-function InputFile({ placeholder, name, onChange }: InputFileProps) {
+function InputFile({ placeholder, name, onChange, Error }: InputFileProps) {
   return (
     <div className="text-sm">
+        {Error?.title === name && Error.message && (
+        <p className=" text-red-600 py-1  text-sm pb-4">{Error.message}</p>
+      )}
       <input
         onChange={onChange}
         id="imageInput"

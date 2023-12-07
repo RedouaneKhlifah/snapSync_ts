@@ -1,4 +1,4 @@
-import { RootState } from "../../../interfaces/reduxTypes/Redux";
+import { RootState } from "../types/storTypes";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import {
   FETCH_POSTS,
@@ -7,7 +7,8 @@ import {
   LIKE_POST,
   ActionType,
   DELETE_POST,
-} from "../../../interfaces/reduxTypes/actionsTypes";
+  costumeError,
+} from "../types/actionsTypes";
 
 import {
   DeleteRecord,
@@ -28,10 +29,10 @@ import {
   updatePostsSuccessReq,
   likePostsSuccessReq,
   DeletePostSuccess,
-  deleteLoding,
 } from "./postActionCreators";
 import { postType } from "../../../interfaces/PostTypes";
 import { formState } from "../../../interfaces/FormTypes";
+import { AxiosError } from "axios";
 
 const fetchPosts = (): ThunkAction<
   void,
@@ -63,7 +64,10 @@ const CreatePost = (
     dispatch: ThunkDispatch<
       void,
       unknown,
-      ActionType<CREATE_POST, postType | Error | null>
+      ActionType<
+        CREATE_POST,
+        postType | AxiosError | costumeError<string, string> | null
+      >
     >
   ) => {
     try {
@@ -72,7 +76,8 @@ const CreatePost = (
       dispatch(CreatePostSuccessReq(response.data));
     } catch (error) {
       console.log(error);
-      error instanceof Error && dispatch(formError(error));
+      error instanceof AxiosError &&
+        dispatch(formError(error.response?.data.message));
     }
   };
 };
@@ -85,15 +90,21 @@ const UpdatePost = (
     dispatch: ThunkDispatch<
       void,
       unknown,
-      ActionType<UPDATE_POST, postType | Error | null>
+      ActionType<
+        UPDATE_POST,
+        postType | AxiosError | costumeError<string, string> | null
+      >
     >
   ) => {
     try {
       dispatch(formLoading());
       const response = await PatchRecord("/post", id, data);
+      console.log("responce error update thunk");
+      console.log(response);
       dispatch(updatePostsSuccessReq(response.data));
     } catch (error) {
-      error instanceof Error && dispatch(formError(error));
+      error instanceof AxiosError &&
+        dispatch(formError(error.response?.data.message));
     }
   };
 };
@@ -109,7 +120,6 @@ const DeletePost = (
     >
   ) => {
     try {
-      dispatch(deleteLoding());
       const response = await DeleteRecord("/post", id);
       dispatch(DeletePostSuccess(response.data));
     } catch (error) {
